@@ -1,45 +1,49 @@
-// Описаний у документації
-import iziToast from 'izitoast';
-// Додатковий імпорт стилів
-import 'izitoast/dist/css/iziToast.min.css';
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
 
-const input = document.querySelector('.form');
+const input = document.querySelector(".form");
 
-input.addEventListener('submit', handleSubmit);
+input.addEventListener("submit", handleSubmit);
 
 function handleSubmit(event) {
   event.preventDefault();
-  const delayValue = input.elements.delay.value;
+  const delayValue = Number(input.elements.delay.value);
   const stateValue = input.elements.state.value;
+
+  if (!delayValue || delayValue <= 0) {
+    iziToast.warning({
+      title: "Warning",
+      message: "Please enter a positive number for delay",
+      position: "topRight",
+    });
+    return;
+  }
 
   const prom = new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (stateValue === 'fulfilled') {
-        resolve(stateValue);
+      if (stateValue === "fulfilled") {
+        resolve(delayValue);
       } else {
-        reject(stateValue);
+        reject(delayValue);
       }
     }, delayValue);
-    
   });
 
-  prom.then(() => {
-    iziToast
-      .success({
-        title: 'OK',
-        message: `Fulfilled promise in ${delayValue}ms`,
-        position: 'topRight'
+  prom
+    .then((delay) => {
+      iziToast.success({
+        title: "OK",
+        message: `Fulfilled promise in ${delay}ms`,
+        position: "topRight",
       });
       input.reset();
-  })
-  .catch(() => {
-    iziToast.error({
-      title: 'Error',
-      message: `Rejected promise in ${delayValue}ms`,
-      position: 'topRight'
+    })
+    .catch((delay) => {
+      iziToast.error({
+        title: "Error",
+        message: `Rejected promise in ${delay}ms`,
+        position: "topRight",
+      });
+      input.reset();
     });
-    input.reset();
-  });
-
-  
 }
